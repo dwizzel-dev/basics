@@ -1,0 +1,180 @@
+html{
+	font-family: "Helvetica Neue", Arial, sans-serif;
+	line-height: 1.5;
+	-ms-text-size-adjust: 100%;
+	-webkit-text-size-adjust: 100%;
+	-webkit-box-sizing: border-box;
+	box-sizing: border-box;
+	font-size: 1.0em;
+	-ms-overflow-style: scrollbar;
+	-webkit-tap-highlight-color: transparent;
+    }
+body{
+    padding: 20px;
+    margin:0;
+    }
+h1,h2{
+    text-transform: capitalize;
+    padding: 10px 10px 0px 10px;
+}
+h1{
+    font-size: 2.5em;
+    margin: 0 0 20px 0;
+    padding: 20px 0 10px 0;
+    border-bottom: 1px solid #000;
+    font-weight:bold;
+    color:#000;
+    line-height: 1.0;
+}
+h2{
+    font-size:1.2em;
+    margin:0;
+    line-height: 1.0;
+}
+a{
+    color:#000;
+    text-decoration: none;
+}
+a:visited{
+    color:#333;
+}
+input[type="text"]{
+    padding: 10px;
+    font-size: 1.2em;
+    border-radius: 5px;
+    border: 1px solid #ccc;
+}
+button{
+    border: none;
+    padding: 20px 50px;
+    background: #333;   
+    font-weight:bold;
+    font-size: 1.0em;
+    color:#fff;
+    text-transform: uppercase;
+    border-radius: 5px;
+    margin-top: 20px;
+    cursor:pointer;
+    }
+button.fixed{
+    width: 60px;
+    border-radius: 30px;
+    padding: 20px;
+    position: fixed;
+    right: 20px;
+    bottom: 20px;
+    margin: 0;
+    font-size: 2.0em;
+    line-height: 0.6em;
+    box-shadow: 0px 2px 5px #00000050;
+}    
+nav UL{
+    margin: 0;
+    padding: 0;
+    list-style-type: none;
+    width: 100%;
+    }   
+nav LI {
+    margin: 0 10px 0 0;
+    display: inline-block;
+    padding: 10px;
+    background-color: #333;
+    border-radius: 5px;
+    color:#fff;
+}
+nav LI:hover {
+    background-color: #aaa;
+    color: #000;
+}
+nav LI A, nav LI A:visited{
+    text-decoration: none;
+    color:#fff;
+}
+.container{    
+    width: 100%;
+    }
+.container UL.listing{
+    margin: 0;
+    padding: 0;
+    list-style-type: none;
+    width: 100%;
+    }
+.container UL.listing LI{
+    width: 100%;
+    margin-bottom: 0;
+    display: inline-block;
+    cursor: pointer;
+    overflow: hidden;
+    border-radius: 5px;
+    }
+.container UL.listing LI:nth-child(even) {
+    background: #6d000036;
+    }
+.container UL.listing LI:nth-child(odd) {
+    background: #6d00001c;   
+    }
+.container UL.listing LI:hover{
+    background: #ddd;
+    }      
+div.label{
+    width: 100%;
+    font-size: 1.0em;
+    margin-bottom: 5px;
+    }    
+div.input{
+    margin-bottom:20px;
+    }
+table.clients{
+    width:100%;
+    border: solid 1px #000;
+    border-collapse: collapse;
+    text-align: left;
+}
+table.clients TH{
+    padding:15px 10px;
+    border: solid 1px #ddd;
+}
+table.clients TD{
+    padding:10px;
+    border: solid 1px #ddd;
+}
+table.clients TD input{
+    border:0px;
+    padding:0px;
+    margin:0px;
+    font-size: 1.0em;
+    background-color: #eee;
+    color: #00f;
+}
+table.clients TD.input{
+    background-color: #eee;
+}
+table.clients TD.control div{
+    float:left;
+    margin-right:5px;
+}
+table.clients TD.control div{
+    float:left;
+    margin-right:5px;
+}
+table.clients BUTTON{
+    border: none;
+    padding: 5px 10px;
+    background: #ccc;   
+    font-size: 0.75em;
+    color:#333;
+    text-transform: lowercase;
+    border-radius: 5px;
+    margin:0;   
+}
+table.clients BUTTON.cancel{
+    background: rgb(100, 0, 0);   
+    color:#fff;
+}    
+table.clients BUTTON.save{
+    background: rgb(0, 70, 0);   
+    color:#fff;
+}
+table.clients BUTTON.disabled{
+    opacity:0.2;
+}
