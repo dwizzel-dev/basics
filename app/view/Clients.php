@@ -5,6 +5,7 @@
   <meta name="viewport" content="user-scalable=no, width=device-width, initial-scale=1, maximum-scale=1">
   <title><?php echo $data['title']; ?></title>
   <link rel="stylesheet" href="<?php echo CSS_PATH.'global.css'; ?>">
+  <!--<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css" integrity="sha384-Gn5384xqQ1aoWXA+058RXPxPg6fy4IWvTNh0E263XmFcJlSAwiGgFAW/dAiS6JXm" crossorigin="anonymous">-->
   <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
 </head>
 <body>
@@ -50,12 +51,15 @@
   
 jQuery(document).ready(function(){
 
-    var gClient = new Object();
+    var gClient = {};
+    var gNewId = 'new';
 
     $('.modify').click(function(){
         modifyRow($(this).closest('tr').attr('clientid'));
     });
-
+    $('.delete').click(function(){
+        deleteRow($(this).closest('tr').attr('clientid'));
+    });
     $('BUTTON.add').click(function(){
         addRow();
     });
@@ -63,6 +67,7 @@ jQuery(document).ready(function(){
     function setDeleteButt(obj, id){
         obj.html('delete');
         obj.removeClass('save disabled');
+        obj.attr('disabled', false);
         obj.unbind();
         obj.click(function(){
             deleteRow(id);
@@ -72,6 +77,7 @@ jQuery(document).ready(function(){
     function setModifyButt(obj, id){
         obj.html('modify');
         obj.removeClass('cancel disabled');
+        obj.attr('disabled', false);
         obj.unbind();
         obj.click(function(){
             modifyRow(id);
@@ -98,21 +104,29 @@ jQuery(document).ready(function(){
 
     function setLoading(id){
         var obj = $('.clients TR[clientid="' + id + '"]');
-        obj.find('TD.control').find('BUTTON.modify').attr('disabled', true);
-        obj.find('TD.control').find('BUTTON.delete').attr('disabled', true);
-        obj.find('TD.control').find('BUTTON.delete').addClass('disabled');
-        obj.find('TD.control').find('BUTTON.modify').addClass('disabled');
-        $('BUTTON.add').attr('disabled', true);
-        $('BUTTON.add').addClass('disabled');
+        var modify = obj.find('TD.control').find('BUTTON.modify');
+        modify.attr('disabled', true);
+        modify.addClass('disabled');
+        var del = obj.find('TD.control').find('BUTTON.delete');     
+        del.attr('disabled', true);
+        del.addClass('disabled');
+        var add = $('BUTTON.add');
+        add.attr('disabled', true);
+        add.addClass('disabled');
     }
 
     function removeLoading(id){
+        $('.clients TR[clientid="' + id + '"]').removeClass('editing');
         $('BUTTON.add').attr('disabled', false);
         $('BUTTON.add').removeClass('disabled');
     }
 
     function cancelRowModif(id){
         var obj = $('.clients TR[clientid="' + id + '"]');
+        if(id == gNewId){
+            deleteTableRow(id);
+        }
+        obj.removeClass('editing');
         obj.find(' TD.editable').each(function(index){
             var rowname = $(this).attr('rowname');
             $(this).removeClass('input');
@@ -122,16 +136,31 @@ jQuery(document).ready(function(){
         setDeleteButt(obj.find('.delete'), id);
     }
 
-    function deleteRow(id){
-        console.log(id);
+    function deleteRow(clientId){
+        var post = 'DELETE';
+        var url = 'http://basics.homestead.local/api/clients/' + clientId + '/';
+        $.ajax({
+            clientId: clientId,
+            type: post,
+            url: url,
+        }).done(function(data){
+            removeLoading(this.clientId);
+            deleteTableRow(this.clientId);
+        }).fail(function(xhr, status, error){
+            console.log('fail[' + this.clientId + ']:' + status);
+        }); 
+    }
+
+    function deleteTableRow(id){
+        $('.clients TR[clientid="' + id + '"]').remove();    
     }
     
     function addRow(){
-        console.log('addRow');
-        var id = '0';
+        if($('.clients TR[clientid="' + gNewId + '"]').length != 0){
+            return;
+            }
         var obj = $('.clients TR:last');
-        var html = '';
-        html += '<tr clientid="' + id + '">';
+        var html = '<tr clientid="' + gNewId + '">';
         html += '<td rowname="clientId"></td>';
         html += '<td rowname="firstname" class="editable"></td>';
         html += '<td rowname="lastname" class="editable"></td>';
@@ -142,40 +171,47 @@ jQuery(document).ready(function(){
         html += '</td>';
         html += '</tr>';
         obj.before(html);
-        modifyRow(id);
+        modifyRow(gNewId);
     }
 
-    function saveRowModif(id){
-        gClient['clientId'] = id;
-        var obj = $('.clients TR[clientid="' + id + '"]');
+    function saveRowModif(clientId){
+        gClient = {};
+        var obj = $('.clients TR[clientid="' + clientId + '"]');
         obj.find('TD.editable').each(function(index){
             var rowname = $(this).attr('rowname');
             var value = $(this).find('input').val();
             gClient[rowname] = value;
             $(this).removeClass('input');
             $(this).html(value);
-            setModifyButt(obj.find('.modify'), id);
-            setDeleteButt(obj.find('.delete'), id);
-            setLoading(id);
+            setModifyButt(obj.find('.modify'), clientId);
+            setDeleteButt(obj.find('.delete'), clientId);
+            setLoading(clientId);
         });
+        var post = 'POST';
+        var url = 'http://basics.homestead.local/api/clients/';
+        if(clientId != gNewId){
+            post = 'PUT';
+            url = 'http://basics.homestead.local/api/clients/' + clientId + '/';
+        } 
         $.ajax({
-            id: id,
-            type:'POST',
-            url: 'http://basics.homestead.local/api/clients/',
+            clientId: clientId,
+            type: post,
+            url: url,
             data: gClient
         }).done(function(data){
             obj.find('TD[rowname="clientId"]').html(data.clientId);
             setModifyButt(obj.find('.modify'), data.clientId);
             setDeleteButt(obj.find('.delete'), data.clientId);    
-            removeLoading(id);
+            removeLoading(this.clientId);
             obj.attr('clientId', data.clientId);
         }).fail(function(xhr, status, error){
-            console.log('fail[' + this.id + ']:' + status);
+            console.log('fail[' + this.clientId + ']:' + status);
         });
     }
 
     function modifyRow(id){
         var obj = $('.clients TR[clientid="' + id + '"]');
+        obj.addClass('editing');
         obj.find('TD.editable').each(function(index){
             var rowname = $(this).attr('rowname');
             var value = $(this).html();

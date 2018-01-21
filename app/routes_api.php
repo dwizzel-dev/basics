@@ -16,23 +16,26 @@ class RoutesApi extends BaseRoutes{
     }
 
     public function route(){
-        $this->match('clients/', function($args){
-            if($args === false){
-                return false;        
-            } 
-            require_once($this->getController('clients'));
-            $oCtrl = new Clients($this->reg);
-            $oCtrl->processApi($args);
-        });
-        $this->match('clients/{clientId}/', function($args){
-            if($args === false){
-                return false;
-            } 
-            require_once($this->getController('clients'));
-            $oCtrl = new Clients($this->reg);
-            $oCtrl->processApi($args);
-        });
+        if($this->match('clients/', function($args){
+            return $this->useClients($args);
+            })){
+        }else if($this->match('clients/{clientId}/', function($args){
+            return $this->useClients($args);    
+            })){
+        }else{
+            //
+        }
     }
+
+    private function useClients(&$args){
+        if($args === false){
+            return false;
+        }
+        require_once($this->getController('clients'));
+        $oCtrl = new Clients($this->reg);
+        $oCtrl->processApi($args);
+        return true;
+    }    
 
     
 

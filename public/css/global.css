@@ -134,16 +134,18 @@ table.clients TH{
     padding:15px 10px;
     border: solid 1px #ddd;
 }
+table.clients TR.editing{
+    background-color: #eee;
+}
 table.clients TD{
     padding:10px;
     border: solid 1px #ddd;
 }
 table.clients TD input{
     border:0px;
-    padding:0px;
+    padding:5px;
     margin:0px;
     font-size: 1.0em;
-    background-color: #eee;
     color: #00f;
 }
 table.clients TD.input{

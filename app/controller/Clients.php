@@ -21,9 +21,6 @@ class Clients {
                 break;    
             case 'DELETE':
                 break;    
-            case 'GET':
-                $this->viewAll();
-                break;        
             default:
                 $this->viewAll();
                 break;    
@@ -36,12 +33,11 @@ class Clients {
                 $this->setOne();
                 break;
             case 'PUT':
+                $this->updateOne(intVal($args['clientId']));
                 break;    
             case 'DELETE':
-                break;    
-            case 'GET':
-                $this->getAll();
-                break;        
+                $this->deleteOne(intVal($args['clientId']));
+                break;
             default:
                 $this->getAll();
                 break;    
@@ -57,16 +53,33 @@ class Clients {
         require_once(MODEL_PATH.'ClientsModel.php');
         $oClients = new ClientsModel($this->reg);
         $this->reg->get('resp')->put('clientId', $oClients->setOne($data));
-        echo $this->reg->get('resp')->output();
-        exit();
+        exit($this->reg->get('resp')->output());
+    }
+
+    private function updateOne($clientId){
+        $data = array(
+            'firstname' => $this->reg->get('req')->get('firstname'),
+            'lastname' => $this->reg->get('req')->get('lastname'),
+            'appointmentDate' => $this->reg->get('req')->get('appointmentDate')
+        );
+        require_once(MODEL_PATH.'ClientsModel.php');
+        $oClients = new ClientsModel($this->reg);
+        $this->reg->get('resp')->put('clientId', $oClients->updateOne($clientId, $data));
+        exit($this->reg->get('resp')->output());
+    }
+
+    private function deleteOne($clientId){
+        require_once(MODEL_PATH.'ClientsModel.php');
+        $oClients = new ClientsModel($this->reg);
+        $this->reg->get('resp')->put('clientId', $oClients->deleteOne($clientId));
+        exit($this->reg->get('resp')->output());
     }
 
     private function getAll(){
         require_once(MODEL_PATH.'ClientsModel.php');
         $oClients = new ClientsModel($this->reg);
         $this->reg->get('resp')->put('clients', $oClients->getAll());
-        echo $this->reg->get('resp')->output();
-        exit();
+        exit($this->reg->get('resp')->output());
     }
 
     private function viewAll(){

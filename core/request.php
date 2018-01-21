@@ -13,11 +13,15 @@ class Request {
 	private $lang = LANG;
 	
 	public function __construct(){
-		$this->arr = $this->recursiveBuild(
-			$_POST,
-			$this->recursiveBuild($_GET)
-		);
 		$this->method = $_SERVER['REQUEST_METHOD'];
+		$this->arr = $this->recursiveBuild($_GET);
+		if(!empty($_POST)){
+			$this->arr = $this->recursiveBuild($_POST, $this->arr);
+		}
+		if($this->method == 'PUT') {
+			parse_str(file_get_contents('php://input'), $_PUT);
+			$this->arr = $this->recursiveBuild($_PUT, $this->arr);
+		}
 		$this->setLocale($this->get('locale'));
 	}
 
