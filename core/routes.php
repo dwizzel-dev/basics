@@ -8,9 +8,11 @@
 abstract class BaseRoutes{
 
     protected $reg;
+    protected $arr;
     
     public function __construct(&$reg){
         $this->reg = $reg;
+        $this->arr = array();
         $this->init();
     }
 
@@ -19,6 +21,14 @@ abstract class BaseRoutes{
 
     public function get($name){
         return (isset($this->arr[$name]['path']))? $this->arr[$name]['path'] : false;
+    }
+
+    public function getPaths(){
+        $paths = array();
+        foreach($this->arr as $k=>$v){
+            array_push($paths, $v['path']);
+        }
+        return $paths;
     }
 
     protected function getController($name){
@@ -35,9 +45,6 @@ abstract class BaseRoutes{
     protected function match($str, $func){
         $paths = explode('/', $this->reg->get('req')->get('path'));
         $regs = explode('/', $str);
-        //print_r($paths);
-        //print_r($regs);
-        //echo '------------'.PHP_EOL;
         if(count($paths) != count($regs)){
             return $func(false);
         }

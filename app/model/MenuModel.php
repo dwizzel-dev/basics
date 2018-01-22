@@ -12,18 +12,47 @@ class MenuModel {
         }
 
     public function getTopMenu(){
-        return array(
+        return $this->setActive(array(
             'home' => array(
                 'text' => 'Home',
-                'path' => $this->reg->get('routes')->get('home')
+                'path' => $this->reg->get('routes')->get('home'),
+                'active' => false,
+                'submenu' => false
             ),
             'clients' => array(
                 'text' => 'Clients',
-                'path' => $this->reg->get('routes')->get('clients')
+                'path' => $this->reg->get('routes')->get('clients'),
+                'active' => false,
+                'submenu' => false
             )
-            
-        );
+        ));
     }
+
+    private function setActive($arr, $level = 0){
+        $paths = explode('/', $this->reg->get('req')->get('path'));
+        if(isset($paths[$level])){
+            foreach($arr as $k=>$v){
+                if(preg_match('/^\/?'.$paths[$level].'\/?$/', $v['path'])){
+                    $arr[$k]['active'] = true;
+                    if(is_array($v['submenu'])){
+                        $this->setActive($arr[$k], $level + 1);
+                    }
+                    break;
+                }
+            }
+        }
+        return $arr;
+    }
+
+    public function active($path){
+        foreach($this->arr as $k=>$v){
+            if(preg_match('/^'.$path.'$/', $v['path'])){
+                return true;
+            }
+        }
+        return false;
+    }
+
 
     
 
