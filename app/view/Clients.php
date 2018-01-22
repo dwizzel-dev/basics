@@ -4,38 +4,11 @@
   <meta charset="utf-8">
   <meta name="viewport" content="user-scalable=no, width=device-width, initial-scale=1, maximum-scale=1">
   <title><?php echo $data['title']; ?></title>
-  <!--<link rel="stylesheet" href="<?php echo CSS_PATH.'global.css'; ?>">-->
+  <link rel="stylesheet" href="<?php echo CSS_PATH.'global.css'; ?>">
   <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css" integrity="sha384-Gn5384xqQ1aoWXA+058RXPxPg6fy4IWvTNh0E263XmFcJlSAwiGgFAW/dAiS6JXm" crossorigin="anonymous">
   <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
 </head>
 <style>
-    .clients TR.editing{
-        background-color: #007bff17 !important;
-    }
-    .clients TR.editing TD, .clients TR.editing TH{
-    }
-    .clients TD.editable INPUT{
-        width:100%;
-        border:0;
-        background-color:transparent;
-        color: #00f;
-        padding: 0;
-        margin: 0;
-    }
-    .clients BUTTON{
-        width: 70px;
-    }
-    .clients BUTTON.add{
-        width: 140px;
-    }
-    .clients TH:last-child, .clients TH:first-child{
-        width: 5%;
-    }
-    .clients TH{
-        width: 30%;
-    }
-
-    
 </style>
 <body>
     <div class="container-fluid">
@@ -70,7 +43,7 @@
             $table .= '</td>';
             $table .= '</tr>';
         }
-        $table .= '<tr>';
+        $table .= '<tr class="controls">';
         $table .= '<td colspan="4"></td>';
         $table .= '<td>';
         $table .= '<div class="btn-group btn-group-sm" role="group">';
@@ -95,7 +68,8 @@
   
 jQuery(document).ready(function(){
 
-    var gClient = {};
+    var gRows = {};
+    var gRow = {};
     var gNewId = 'new';
 
     $('.modify').click(function(){
@@ -168,18 +142,21 @@ jQuery(document).ready(function(){
     }
 
     function cancelRowModif(id){
-        var obj = $('.clients TR[clientid="' + id + '"]');
         if(id == gNewId){
             deleteTableRow(id);
+        }else{
+            var obj = $('.clients TR[clientid="' + id + '"]');
+            obj.removeClass('editing');
+            obj.find(' TD.editable').each(function(index){
+                var rowname = $(this).attr('rowname');
+                $(this).removeClass('input');
+                $(this).html(gRow[rowname]);
+            });
+            setModifyButt(obj.find('.modify'), id);
+            setDeleteButt(obj.find('.delete'), id);
+            //delete
         }
-        obj.removeClass('editing');
-        obj.find(' TD.editable').each(function(index){
-            var rowname = $(this).attr('rowname');
-            $(this).removeClass('input');
-            $(this).html(gClient[rowname]);
-        });
-        setModifyButt(obj.find('.modify'), id);
-        setDeleteButt(obj.find('.delete'), id);
+        checkMultiControls();
     }
 
     function deleteRow(clientId){
@@ -192,6 +169,7 @@ jQuery(document).ready(function(){
         }).done(function(data){
             removeLoading(this.clientId);
             deleteTableRow(this.clientId);
+            checkMultiControls();
         }).fail(function(xhr, status, error){
             console.log('fail[' + this.clientId + ']:' + status);
         }); 
@@ -205,7 +183,6 @@ jQuery(document).ready(function(){
         if($('.clients TR[clientid="' + gNewId + '"]').length != 0){
             return;
             }
-        var obj = $('.clients TR:last');
         var html = '<tr clientid="' + gNewId + '">';
         html += '<th rowname="clientId">' + gNewId + '</th>';
         html += '<td rowname="firstname" class="editable"></td>';
@@ -218,17 +195,22 @@ jQuery(document).ready(function(){
         html += '</div>';
         html += '</td>';
         html += '</tr>';
+        //var obj = $('.clients TR:last');
+        var obj = $('.clients TR.multi-controls');
+        if(!obj.length){
+            obj = $('.clients TR.controls');
+        }
         obj.before(html);
         modifyRow(gNewId);
     }
 
     function saveRowModif(clientId){
-        gClient = {};
+        gRow = {};
         var obj = $('.clients TR[clientid="' + clientId + '"]');
         obj.find('TD.editable').each(function(index){
             var rowname = $(this).attr('rowname');
             var value = $(this).find('input').val();
-            gClient[rowname] = value;
+            gRow[rowname] = value;
             $(this).removeClass('input');
             $(this).html(value);
             setModifyButt(obj.find('.modify'), clientId);
@@ -245,12 +227,13 @@ jQuery(document).ready(function(){
             clientId: clientId,
             type: post,
             url: url,
-            data: gClient
+            data: gRow
         }).done(function(data){
             obj.find('TH[rowname="clientId"]').html(data.clientId);
             setModifyButt(obj.find('.modify'), data.clientId);
             setDeleteButt(obj.find('.delete'), data.clientId);    
             removeLoading(this.clientId);
+            checkMultiControls();
             obj.attr('clientId', data.clientId);
         }).fail(function(xhr, status, error){
             console.log('fail[' + this.clientId + ']:' + status);
@@ -263,7 +246,7 @@ jQuery(document).ready(function(){
         obj.find('TD.editable').each(function(index){
             var rowname = $(this).attr('rowname');
             var value = $(this).html();
-            gClient[rowname] = value;
+            gRow[rowname] = value;
             $(this).addClass('input');
             $(this).html('<input type="text">');
             $(this).find('input').attr('name', rowname);
@@ -271,6 +254,72 @@ jQuery(document).ready(function(){
         });
         setCancelButt(obj.find('.modify'), id);
         setSaveButt(obj.find('.delete'), id);
+        checkMultiControls();
+    }
+
+    function cancelAllRowModif(){
+        var obj = $('.clients TR.editing');
+        obj.each(function(index){
+            console.log($(this).attr('clientid'));
+            cancelRowModif($(this).attr('clientid'));
+        }); 
+    }
+
+    function saveAllRowModif(){
+        var obj = $('.clients TR.editing');
+        obj.each(function(index){
+            saveRowModif($(this).attr('clientid'));
+        }); 
+    }
+
+    function setCancelAllButt(){
+        var obj = $('.clients TR.multi-controls BUTTON.cancel'); 
+        obj.html('all');
+        obj.addClass('btn-warning');
+        obj.unbind();
+        obj.click(function(){
+            cancelAllRowModif();
+        });   
+    }
+
+    function setSaveAllButt(){
+        var obj = $('.clients TR.multi-controls BUTTON.save'); 
+        obj.html('all');
+        obj.addClass('btn-success');
+        obj.unbind();
+        obj.click(function(){
+            saveAllRowModif();
+        });   
+    }
+
+    function checkMultiControls(){
+        var obj = $('.clients TR.editing');
+        if(obj.length > 1){
+            addMultiControls();
+        }else{
+            $('.clients TR.multi-controls').remove();
+        }
+        
+    }
+
+    function addMultiControls(){
+        if($('.clients TR.multi-controls').length == 1){
+            return;
+        }
+        var obj = $('.clients TR.controls');
+        var html = '<tr class="multi-controls">';
+        html += '<td colspan="4"></td>';
+        html += '<td class="">';
+        html += '<div class="btn-group btn-group-sm" role="group">';
+        html += '<button type="button" class="cancel btn"></button>';
+        html += '<button type="button" class="save btn"></button>';
+        html += '</div>';
+        html += '</td>';
+        html += '</tr>';
+        obj.before(html);
+        setCancelAllButt();
+        setSaveAllButt();
+
     }
 
 });
