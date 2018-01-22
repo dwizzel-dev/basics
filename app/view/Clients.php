@@ -4,43 +4,87 @@
   <meta charset="utf-8">
   <meta name="viewport" content="user-scalable=no, width=device-width, initial-scale=1, maximum-scale=1">
   <title><?php echo $data['title']; ?></title>
-  <link rel="stylesheet" href="<?php echo CSS_PATH.'global.css'; ?>">
-  <!--<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css" integrity="sha384-Gn5384xqQ1aoWXA+058RXPxPg6fy4IWvTNh0E263XmFcJlSAwiGgFAW/dAiS6JXm" crossorigin="anonymous">-->
+  <!--<link rel="stylesheet" href="<?php echo CSS_PATH.'global.css'; ?>">-->
+  <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css" integrity="sha384-Gn5384xqQ1aoWXA+058RXPxPg6fy4IWvTNh0E263XmFcJlSAwiGgFAW/dAiS6JXm" crossorigin="anonymous">
   <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
 </head>
+<style>
+    .clients TR.editing{
+        background-color: #007bff17 !important;
+    }
+    .clients TR.editing TD, .clients TR.editing TH{
+    }
+    .clients TD.editable INPUT{
+        width:100%;
+        border:0;
+        background-color:transparent;
+        color: #00f;
+        padding: 0;
+        margin: 0;
+    }
+    .clients BUTTON{
+        width: 70px;
+    }
+    .clients BUTTON.add{
+        width: 140px;
+    }
+    .clients TH:last-child, .clients TH:first-child{
+        width: 5%;
+    }
+    .clients TH{
+        width: 30%;
+    }
+
+    
+</style>
 <body>
-    <div class="container">
+    <div class="container-fluid">
         <?php
         //top menu
         require_once(VIEW_PATH.'menu.php');
         //content
         $content = '<h1>'.$data['title'].'</h1>';
         //data
-        $table = '<table class="clients">';
+        $table = '<table class="clients table table-striped table-hover table-bordered">';
+        $table .= '<thead class="thead-dark">';
         $table .= '<tr>';
-        $table .= '<th>id</th>';
-        $table .= '<th>firstname</th>';
-        $table .= '<th>lastname</th>';
-        $table .= '<th colspan="2">appointmentDate</th>';
+        $table .= '<th scope="col">id</th>';
+        $table .= '<th scope="col">firstname</th>';
+        $table .= '<th scope="col">lastname</th>';
+        $table .= '<th scope="col">appointmentDate</th>';
+        $table .= '<th scope="col">actions</th>';
         $table .= '</tr>';
+        $table .= '</thead>';
+        $table .= '<tbody>';
         foreach($data['clients'] as $k=>$v){
-            $table .= '<tr clientid="'.$v['clientId'].'">';
-            $table .= '<td rowname="clientId">'.$v['clientId'].'</td>';
+            $table .= '<tr clientid="'.$v['clientId'].'" class="">';
+            $table .= '<th rowname="clientId" class="" scope="row">'.$v['clientId'].'</th>';
             $table .= '<td rowname="firstname" class="editable">'.$v['firstname'].'</td>';
             $table .= '<td rowname="lastname" class="editable">'.$v['lastname'].'</td>';
             $table .= '<td rowname="appointmentDate" class="editable">'.$v['appointmentDate'].'</td>';
-            $table .= '<td class="control">';
-            $table .= '<div><button class="modify">modify</button></div>';
-            $table .= '<div><button class="delete">delete</button></div>';
+            $table .= '<td class="">';
+            $table .= '<div class="btn-group btn-group-sm" role="group">';
+            $table .= '<button type="button" class="modify btn">modify</button>';
+            $table .= '<button type="button" class="delete btn btn-danger">delete</button>';
+            $table .= '</div>';
             $table .= '</td>';
             $table .= '</tr>';
         }
         $table .= '<tr>';
         $table .= '<td colspan="4"></td>';
-        $table .= '<td class="control"><div><button class="add">add</button></div></td>';
+        $table .= '<td>';
+        $table .= '<div class="btn-group btn-group-sm" role="group">';
+        $table .= '<button type="button" class="add modify btn btn-primary">add</button>';
+        $table .= '</div>';
+        $table .= '</td>';
         $table .= '</tr>';
+        $table .= '</tbody>';
         $table .= '</table>';
+        //$content .= '<div class="row">';
+        $content .= '<div class="table-responsive">';
         $content .= $table;
+        $content .= '</div>';
+        //$content .= '</div>';
         //output 
         echo $content;
         ?>
@@ -66,7 +110,8 @@ jQuery(document).ready(function(){
 
     function setDeleteButt(obj, id){
         obj.html('delete');
-        obj.removeClass('save disabled');
+        obj.removeClass('btn-success');
+        obj.addClass('btn-danger');
         obj.attr('disabled', false);
         obj.unbind();
         obj.click(function(){
@@ -76,7 +121,7 @@ jQuery(document).ready(function(){
     
     function setModifyButt(obj, id){
         obj.html('modify');
-        obj.removeClass('cancel disabled');
+        obj.removeClass('btn-warning');
         obj.attr('disabled', false);
         obj.unbind();
         obj.click(function(){
@@ -86,7 +131,8 @@ jQuery(document).ready(function(){
 
     function setSaveButt(obj, id){
         obj.html('save');
-        obj.addClass('save');
+        obj.removeClass('btn-danger');
+        obj.addClass('btn-success');
         obj.unbind();
         obj.click(function(){
             saveRowModif(id);
@@ -95,7 +141,7 @@ jQuery(document).ready(function(){
 
     function setCancelButt(obj, id){
         obj.html('cancel');
-        obj.addClass('cancel');
+        obj.addClass('btn-warning');
         obj.unbind();
         obj.click(function(){
             cancelRowModif(id);
@@ -161,13 +207,15 @@ jQuery(document).ready(function(){
             }
         var obj = $('.clients TR:last');
         var html = '<tr clientid="' + gNewId + '">';
-        html += '<td rowname="clientId"></td>';
+        html += '<th rowname="clientId">' + gNewId + '</th>';
         html += '<td rowname="firstname" class="editable"></td>';
         html += '<td rowname="lastname" class="editable"></td>';
         html += '<td rowname="appointmentDate" class="editable"></td>';
-        html += '<td class="control">';
-        html += '<div><button class="modify">modify</button></div>';
-        html += '<div><button class="delete">delete</button></div>';
+        html += '<td class="">';
+        html += '<div class="btn-group btn-group-sm" role="group">';
+        html += '<button type="button" class="modify btn">modify</button>';
+        html += '<button type="button" class="delete btn btn-danger">delete</button>';
+        html += '</div>';
         html += '</td>';
         html += '</tr>';
         obj.before(html);
@@ -199,7 +247,7 @@ jQuery(document).ready(function(){
             url: url,
             data: gClient
         }).done(function(data){
-            obj.find('TD[rowname="clientId"]').html(data.clientId);
+            obj.find('TH[rowname="clientId"]').html(data.clientId);
             setModifyButt(obj.find('.modify'), data.clientId);
             setDeleteButt(obj.find('.delete'), data.clientId);    
             removeLoading(this.clientId);

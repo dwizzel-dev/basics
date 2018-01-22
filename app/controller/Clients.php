@@ -17,10 +17,6 @@ class Clients {
         switch($this->reg->get('req')->getMethod()){
             case 'POST':
                 break;
-            case 'PUT':
-                break;    
-            case 'DELETE':
-                break;    
             default:
                 $this->viewAll();
                 break;    
