@@ -12,18 +12,22 @@ class RoutesApi extends BaseRoutes{
     }
 
     protected function init(){
-        $this->set('clients', '/clients/', CONTROLLER_PATH.'Clients');
+    }
+
+    protected function error404(){
+        $this->reg->get('resp')->addHeader('HTTP/1.0 404 Not Found');
+        exit($this->reg->get('resp')->output());
     }
 
     public function route(){
-        if($this->match('clients/', function($args){
+        if($this->match(['GET','POST'], 'clients/', function($args){
             return $this->useClients($args);
             })){
-        }else if($this->match('clients/{clientId}/', function($args){
+        }else if($this->match(['PUT','GET','DELETE'], 'clients/{clientId}/', function($args){
             return $this->useClients($args);    
             })){
         }else{
-            //
+            $this->error404();
         }
     }
 
@@ -31,7 +35,7 @@ class RoutesApi extends BaseRoutes{
         if($args === false){
             return false;
         }
-        require_once($this->getController('clients'));
+        require_once(CONTROLLER_PATH.'Clients.php');
         $oCtrl = new Clients($this->reg);
         $oCtrl->processApi($args);
         return true;

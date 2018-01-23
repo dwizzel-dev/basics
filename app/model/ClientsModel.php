@@ -22,6 +22,15 @@ class ClientsModel {
         return $rtn->rows;
     }
 
+    public function getOne($clientId){
+        $query =  'SELECT * FROM clients WHERE clientId = "'.$clientId.'";';
+        $rtn = $this->reg->get('db')->query($query);
+        if($rtn === false){
+            exit($this->reg->get('db')->getErrorMsg());            
+        }
+        return $rtn->row;
+    }
+
     public function setOne(&$data){
         $fields = '';
         $values = '';

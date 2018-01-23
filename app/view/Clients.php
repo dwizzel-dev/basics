@@ -143,7 +143,7 @@ jQuery(document).ready(function(){
     }
 
     function removeLoading(id){
-        $('.clients TR[clientid="' + id + '"]').removeClass('editing');
+        $('.clients TR[clientid="' + id + '"]').removeClass('editing error');
         $('BUTTON.add').attr('disabled', false);
         $('BUTTON.add').removeClass('disabled');
     }
@@ -243,6 +243,7 @@ jQuery(document).ready(function(){
             url: url,
             data: data
         }).done(function(data){
+            //console.log('done[' + this.clientId + ']:' + data);
             obj.find('TH[rowname="clientId"]').html(data.clientId);
             setModifyButt(obj.find('.modify'), data.clientId);
             setDeleteButt(obj.find('.delete'), data.clientId);    
@@ -250,7 +251,9 @@ jQuery(document).ready(function(){
             checkMultiControls();
             obj.attr('clientId', data.clientId);
         }).fail(function(xhr, status, error){
-            console.log('fail[' + this.clientId + ']:' + status);
+            //console.log('fail[' + this.clientId + ']:' + status + '|' + error);
+            //make the row errors
+            obj.addClass('error');
         });
     }
 

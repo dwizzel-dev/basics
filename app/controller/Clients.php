@@ -7,7 +7,23 @@
 
 class Clients {
 
-	private $reg;
+    private $reg;
+    private $shema = array(
+        'firstname' => array(
+            'value' => '',
+            'empty' => false,
+            'error' => 'firstname must be filled'
+        ),
+        'lastname' => array(
+            'value' => '',
+            'empty' => false,
+            'error' => 'lastname must be filled'
+        ),
+        'appointmentDate' => array(
+            'value' => '',
+            'empty' => true
+        )
+    );
 	           
 	public function __construct(&$reg){
         $this->reg = $reg;
@@ -28,6 +44,13 @@ class Clients {
             case 'POST':
                 $this->setOne();
                 break;
+            case 'GET':
+                if(isset($args['clientId'])){
+                    $this->getOne(intVal($args['clientId']));
+                }else{
+                    $this->getAll();    
+                }
+                break;
             case 'PUT':
                 $this->updateOne(intVal($args['clientId']));
                 break;    
@@ -35,29 +58,47 @@ class Clients {
                 $this->deleteOne(intVal($args['clientId']));
                 break;
             default:
-                $this->getAll();
                 break;    
         }        
     }
 
     private function setOne(){
-        $data = array(
-            'firstname' => $this->reg->get('req')->get('firstname'),
-            'lastname' => $this->reg->get('req')->get('lastname'),
-            'appointmentDate' => $this->reg->get('req')->get('appointmentDate')
-        );
+        $err = false;
+        $data = array();
+        foreach($this->shema as $k=>$v){
+            $data[$k] = $this->reg->get('req')->get($k);
+            if(!$v['empty'] && $data[$k] == ''){
+                $this->reg->get('resp')->addError($v['error'], '100');            
+                $err = true;
+            }
+        }
+        if($err){
+            exit($this->reg->get('resp')->output());    
+        }
         require_once(MODEL_PATH.'ClientsModel.php');
         $oClients = new ClientsModel($this->reg);
-        $this->reg->get('resp')->put('clientId', $oClients->setOne($data));
+        $clientId = $oClients->setOne($data);
+        if($clientId === false){
+            $this->reg->get('resp')->addError('client not inserted', '100');    
+        }else{
+            $this->reg->get('resp')->put('clientId', $clientId);
+        }
         exit($this->reg->get('resp')->output());
     }
 
     private function updateOne($clientId){
-        $data = array(
-            'firstname' => $this->reg->get('req')->get('firstname'),
-            'lastname' => $this->reg->get('req')->get('lastname'),
-            'appointmentDate' => $this->reg->get('req')->get('appointmentDate')
-        );
+        $err = false;
+        $data = array();
+        foreach($this->shema as $k=>$v){
+            $data[$k] = $this->reg->get('req')->get($k);
+            if(!$v['empty'] && $data[$k] == ''){
+                $this->reg->get('resp')->addError($v['error'], '100');            
+                $err = true;
+            }
+        }
+        if($err){
+            exit($this->reg->get('resp')->output());    
+        }
         require_once(MODEL_PATH.'ClientsModel.php');
         $oClients = new ClientsModel($this->reg);
         $this->reg->get('resp')->put('clientId', $oClients->updateOne($clientId, $data));
@@ -74,7 +115,21 @@ class Clients {
     private function getAll(){
         require_once(MODEL_PATH.'ClientsModel.php');
         $oClients = new ClientsModel($this->reg);
-        $this->reg->get('resp')->put('clients', $oClients->getAll());
+        $this->reg->get('resp')->puts($oClients->getAll());
+        exit($this->reg->get('resp')->output());
+    }
+
+    private function getOne($clientId){
+        require_once(MODEL_PATH.'ClientsModel.php');
+        $oClients = new ClientsModel($this->reg);
+        require_once(MODEL_PATH.'ClientsModel.php');
+        $oClients = new ClientsModel($this->reg);
+        $arr = $oClients->getOne($clientId);
+        if($arr === false || !count($arr)){
+            $this->reg->get('resp')->addError('client not found', '100');    
+        }else{
+            $this->reg->get('resp')->puts($arr);
+        }
         exit($this->reg->get('resp')->output());
     }
 

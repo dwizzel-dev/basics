@@ -18,8 +18,9 @@ abstract class BaseRoutes{
 
     abstract protected function init();
     abstract public function route();
+    abstract protected function error404();
 
-    public function get($name){
+    public function getPath($name){
         return (isset($this->arr[$name]['path']))? $this->arr[$name]['path'] : false;
     }
 
@@ -42,7 +43,12 @@ abstract class BaseRoutes{
         );
     }
 
-    protected function match($str, $func){
+    protected function match($method, $str, $func){
+        if(is_array($method)){
+            if(!in_array($this->reg->get('req')->getMethod(), $method)) return $func(false);
+        }else{
+            if($method != $this->reg->get('req')->getMethod()) return $func(false);
+        }
         $paths = explode('/', $this->reg->get('req')->get('path'));
         $regs = explode('/', $str);
         if(count($paths) != count($regs)){

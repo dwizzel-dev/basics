@@ -18,6 +18,12 @@ class RoutesSite extends BaseRoutes{
         $this->set('google', 'https://www.google.ca', '');
     }
 
+    protected function error404(){
+        require_once($this->getController('error404'));
+        $oCtrl = new Error404($this->reg);
+        $oCtrl->process();
+    }
+
     public function route(){
         $paths = explode('/', $this->reg->get('req')->get('path'));
         if(count($paths) >= 1){
@@ -33,12 +39,11 @@ class RoutesSite extends BaseRoutes{
                     $oCtrl->process();
                     break;    
                 default:
-                    require_once($this->getController('error404'));
-                    $oCtrl = new Error404($this->reg);
-                    $oCtrl->process();
+                    $this->error404();
                     break;
             }
-        }        
+        } 
+        
     }
 }
 

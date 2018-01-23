@@ -15,13 +15,13 @@ class MenuModel {
         return $this->setActive(array(
             'home' => array(
                 'text' => 'Home',
-                'path' => $this->reg->get('routes')->get('home'),
+                'path' => $this->reg->get('routes')->getPath('home'),
                 'active' => false,
                 'submenu' => false
             ),
             'clients' => array(
                 'text' => 'Clients',
-                'path' => $this->reg->get('routes')->get('clients'),
+                'path' => $this->reg->get('routes')->getPath('clients'),
                 'active' => false,
                 'submenu' => false
             )
