@@ -9,7 +9,7 @@
 require_once('define.php');
 
 //dev specific
-sleep(1);
+sleep(SLEEP);
 
 //basic file required
 require_once(CORE_PATH.'registry.php');
