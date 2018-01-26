@@ -8,6 +8,9 @@
 //basic defined
 require_once('define.php');
 
+//dev specific
+sleep(1);
+
 //basic file required
 require_once(CORE_PATH.'registry.php');
 require_once(CORE_PATH.'request.php');

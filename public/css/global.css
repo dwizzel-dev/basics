@@ -1,31 +1,52 @@
 
-
-.clients TR.controls{
+TABLE.clients TR.controls{
     background-color: #fff !important;
 }
-.clients TR.multi-controls{
+TABLE.clients TR.multi-controls{
     background-color: #fff !important;
 }
-.clients TR.controls TD, .clients TR.multi-controls TD{
+TABLE.clients TR.controls TD, .clients TR.multi-controls TD{
     border: 0;
 }
-.clients TR.editing{
-    background-color: #007bff17 !important;
+TABLE.clients TR.editing{
+    background-color: #007bff0d !important;
 }
-.clients TR.error{
-    background-color: #ff000017 !important;
+TABLE.clients TR.error{
+    background-color: #dc354517 !important;
 }
-.clients TR.editing TH:first-child{
-    border-left: 0.5rem #00f solid;
+TABLE.clients TR.error{
+    background-color: #dc354517 !important;
+}
+TABLE.clients TR.saving{
+    background-color: #28a74517 !important;
+}
+TABLE.clients TR.editing TH:first-child{
+    border-left: 0.5rem #007bff solid;
     padding-left: 0.6rem; 
 }
-.clients TR.editing TD{
+TABLE.clients TR.error TH:first-child{
+    border-left: 0.5rem #bd2130 solid;
 }
-.clients TR.editing TD:first-child{
+TABLE.clients TR.saving TH:first-child{
+    border-left: 0.5rem #28a745 solid;
 }
-.clients TR.editing TD:last-child{
+TABLE.clients TR.editing TD.actions DIV.edit{
+    display:inline-flex;
+    visibility:visible;
 }
-.clients TD.editable INPUT{
+TABLE.clients TR.editing TD.actions DIV.data{
+    display:none;
+    visibility:hidden;
+}
+TABLE.clients TR TD.actions DIV.data{
+    display:inline-flex;
+    visibility:visible;
+}
+TABLE.clients TR TD.actions DIV.edit{
+    display:none;
+    visibility:hidden;
+}
+TABLE.clients TD.editable INPUT{
     width:100%;
     border:0;
     background-color:transparent;
@@ -33,15 +54,54 @@
     padding: 0;
     margin: 0;
 }
-.clients BUTTON{
+TABLE.clients BUTTON{
     width: 80px;
 }
-.clients BUTTON.add{
+TABLE.clients BUTTON.large{
     width: 160px;
 }
-.clients TH:last-child, .clients TH:first-child{
+TABLE.clients TH:last-child, .clients TH:first-child{
     width: 5%;
 }
-.clients TH{
+TABLE.clients TH{
     width: 30%;
+}
+.loading-icon {
+	width: 10px !important;
+	height: auto !important;
+}
+.loading {
+	-webkit-animation-name: loading; /* Chrome, Safari, Opera */
+	-webkit-animation-duration: 1.0s; /* Chrome, Safari, Opera */
+	-webkit-animation-iteration-count: infinite;
+	-webkit-animation-timing-function: cubic-bezier(.68, -0.55, .27, 1.55);
+	animation-name: loading;
+	animation-duration: 1.0s;
+	animation-iteration-count: infinite;
+	animation-timing-function: cubic-bezier(.68, -0.55, .27, 1.55);
+
+}
+@-webkit-keyframes loading {
+	from {
+		-ms-transform: rotate(0deg); /* IE 9 */
+		-webkit-transform: rotate(0deg); /* Chrome, Safari, Opera */
+		transform: rotate(0deg);
+	}
+	to {
+		-ms-transform: rotate(360deg); /* IE 9 */
+		-webkit-transform: rotate(360deg); /* Chrome, Safari, Opera */
+		transform: rotate(360deg);
+	}
+}
+@keyframes loading {
+	from {
+		-ms-transform: rotate(0deg); /* IE 9 */
+		-webkit-transform: rotate(0deg); /* Chrome, Safari, Opera */
+		transform: rotate(0deg);
+	}
+	to {
+		-ms-transform: rotate(360deg); /* IE 9 */
+		-webkit-transform: rotate(360deg); /* Chrome, Safari, Opera */
+		transform: rotate(360deg);
+	}
 }

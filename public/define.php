@@ -50,6 +50,9 @@ define('LOCALE_ACCEPTED', LOCALE.',fr_CA');
 define('LANG', substr(LOCALE, 0, 2));
 setlocale(LC_MONETARY, LOCALE);
 
+//dev specific for testing
+define('SLEEP', 2);
+
 
 
 //END SCRIPT

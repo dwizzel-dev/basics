@@ -1,0 +1,51 @@
+---
+name: test-dwizzel-0
+ip: "10.1.0.50"
+memory: 2048
+cpus: 1
+provider: virtualbox
+
+authorize: ~/.ssh/id_rsa.pub
+
+keys:
+    - ~/.ssh/id_rsa
+
+folders:
+    - map: C:\Users\Dwizzel\Desktop\dwizzel.dev\projects\laravel\server\test-dwizzel-0
+      to: /home/vagrant/Code
+
+sites:
+    - map: homestead.app
+      to: /home/vagrant/Code/Laravel/public
+    - map: phpmyadmin.homestead.app
+      to: /home/vagrant/Code/phpmyadmin
+    - map: test.homestead.app
+      to: /home/vagrant/Code/test  
+    - map: wines.homestead.local
+      to: /home/vagrant/Code/wines
+    - map: phpmyadmin.homestead.local
+      to: /home/vagrant/Code/phpmyadmin      
+        
+databases:
+    - homestead
+
+# blackfire:
+#     - id: foo
+#       token: bar
+#       client-id: foo
+#       client-token: bar
+
+# fix pour xdebug to foward on host machine car REMOTE_ADDR not the same as VSCode debug listener
+# ports:
+#     - send: 9999
+#       to: 9999
+#       sendip: "10.1.0.1"
+#       toip: "192.168.0.157"
+#       protocol: tcp
+
+# ports:
+#     - send: 50000
+#       to: 5000
+#     - send: 7777
+#       to: 777
+#       protocol: udp
