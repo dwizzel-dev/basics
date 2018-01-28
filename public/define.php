@@ -13,11 +13,13 @@ define('ENV', 'env');
 define('BASE_PATH', realpath(dirname(__FILE__)));
 define('APP_PATH', BASE_PATH.'/../app/');
 define('CORE_PATH', BASE_PATH.'/../core/');
+define('CACHE_PATH', BASE_PATH.'/../cache/');
 
 //MVC
 define('CONTROLLER_PATH', APP_PATH.'controller/');
 define('MODEL_PATH', APP_PATH.'model/');
 define('VIEW_PATH', APP_PATH.'view/');
+
 
 //relative path
 define('WEB_PATH', '/');
@@ -51,7 +53,8 @@ define('LANG', substr(LOCALE, 0, 2));
 setlocale(LC_MONETARY, LOCALE);
 
 //dev specific for testing
-define('SLEEP', 1);
+define('SLEEP', 0);
+define('ENABLE_CACHING', true);
 
 
 

@@ -19,6 +19,7 @@ require_once(CORE_PATH.'db.php');
 require_once(CORE_PATH.'json.php');
 require_once(CORE_PATH.'globals.php');
 require_once(CORE_PATH.'routes.php');
+require_once(CORE_PATH.'cache.php');
 
 //routing
 require_once(APP_PATH.'routes_api.php');

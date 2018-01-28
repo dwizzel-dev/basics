@@ -8,6 +8,7 @@
 class Clients {
 
     private $reg;
+    private $filename = 'clients';
     private $shema = array(
         'firstname' => array(
             'value' => '',
@@ -63,6 +64,7 @@ class Clients {
     }
 
     private function setOne(){
+        Cache::remove($this->filename);
         $err = false;
         $data = array();
         foreach($this->shema as $k=>$v){
@@ -87,6 +89,7 @@ class Clients {
     }
 
     private function updateOne($clientId){
+        Cache::remove($this->filename);
         $err = false;
         $data = array();
         foreach($this->shema as $k=>$v){
@@ -106,6 +109,7 @@ class Clients {
     }
 
     private function deleteOne($clientId){
+        Cache::remove($this->filename);
         require_once(MODEL_PATH.'ClientsModel.php');
         $oClients = new ClientsModel($this->reg);
         $this->reg->get('resp')->put('clientId', $oClients->deleteOne($clientId));
@@ -113,10 +117,17 @@ class Clients {
     }
 
     private function getAll(){
-        require_once(MODEL_PATH.'ClientsModel.php');
-        $oClients = new ClientsModel($this->reg);
-        $this->reg->get('resp')->puts($oClients->getAll());
-        exit($this->reg->get('resp')->output());
+        $data = Cache::read($this->filename);
+        if($data === false){
+            require_once(MODEL_PATH.'ClientsModel.php');
+            $oClients = new ClientsModel($this->reg);
+            $data = $oClients->getAll();
+            $this->reg->get('resp')->puts($data);
+            exit($this->reg->get('resp')->output($this->filename));
+        }else{
+            $this->reg->get('resp')->sendHeader();
+            exit($data);
+        }
     }
 
     private function getOne($clientId){
@@ -142,9 +153,6 @@ class Clients {
         require_once(MODEL_PATH.'MenuModel.php');
         $oMenu = new MenuModel($this->reg); 
         $data['top-menu'] = $oMenu->getTopMenu(); 
-        require_once(MODEL_PATH.'ClientsModel.php');
-        $oClients = new ClientsModel($this->reg);
-        $data['clients'] = $oClients->getAll();
         require_once(VIEW_PATH.'Clients'.'.php');
     }
 

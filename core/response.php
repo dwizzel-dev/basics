@@ -67,23 +67,31 @@ class Response {
 		));
 	}
 	
-	public function output() {
+	public function output($cache = false) {
 		if(count($this->error)){
 			$this->addHeader('HTTP/1.0 400 Bad Request');
 			$this->arr = $this->error;
 		}
+		$this->sendHeader();
+		$rtn = $this->json->encode($this->arr);
+		if($rtn === false || is_numeric($rtn)){ 
+           	return false;
+		}
+		if($cache){
+			Cache::write($cache, $rtn);	
+		}
+		return $rtn;
+	}
+	
+	public function sendHeader() {
 		if(!headers_sent()) {
+			$this->addHeader('Cache-Control:no-cache, private');
 			$this->addHeader('Content-Type: application/json; charset=utf-8');
 			foreach ($this->headers as $header) {
 				header($header, true);
 			}
 		}
-		$rtn = $this->json->encode($this->arr);
-		if($rtn === false || is_numeric($rtn)){ 
-           	return false;
-		}
-		return $rtn;
-	}	
+	}
 
 }
 	

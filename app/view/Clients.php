@@ -77,6 +77,7 @@ jQuery(document).ready(function(){
         $('TABLE.clients TBODY TR[class!="controls"]').remove();
         var post = 'GET';
         var url = 'http://basics.homestead.local/api/clients/';
+        //var url = 'http://tracker.homestead.local/api/test/db/';
         $.ajax({
             type: post,
             url: url,
