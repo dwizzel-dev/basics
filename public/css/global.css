@@ -1,86 +1,87 @@
 
-TABLE.clients TR.controls{
+TABLE TR.controls{
     background-color: #fff !important;
 }
-TABLE.clients TR.multi-controls{
+TABLE TR.multi-controls{
     background-color: #fff !important;
 }
-TABLE.clients TR.controls TD, .clients TR.multi-controls TD{
+TABLE TR.controls TD, .clients TR.multi-controls TD{
     border: 0;
 }
-TABLE.clients TR.editing{
+TABLE TR.editing{
     background-color: #007bff0d !important;
 }
-TABLE.clients TR.error{
+TABLE TR.error{
     background-color: #dc354517 !important;
 }
-TABLE.clients TR.error TH:first-child{
+TABLE TR.error TH:first-child{
     color: #bd2130;
 }
-TABLE.clients TR.errormsg TD, TABLE.clients TR.errormsg TH{
+TABLE TR.errormsg TD, TABLE TR.errormsg TH{
 	padding: 5px;
+	background-color: #dc354534 !important;
 }
-TABLE.clients TR.errormsg SPAN.error{
+TABLE TR.errormsg SPAN.error{
     color: #bd2130;
     font-size: 0.8rem;
     font-weight: normal;
 }
-TABLE.clients TR.saving{
+TABLE TR.saving{
     background-color: #28a74517 !important;
 }
-TABLE.clients TR.editing TH:first-child{
+TABLE TR.editing TH:first-child{
     border-left: 0.5rem #007bff solid;
     padding-left: 0.6rem; 
 }
-TABLE.clients TR.error TH:first-child{
+TABLE TR.error TH:first-child{
     border-left: 0.5rem #bd2130 solid;
 }
-TABLE.clients TR.saving TH:first-child{
+TABLE TR.saving TH:first-child{
     border-left: 0.5rem #28a745 solid;
 }
-TABLE.clients TR.editing TD.actions DIV.edit{
+TABLE TR.editing TD.actions DIV.edit{
     display:inline-flex;
     visibility:visible;
 }
-TABLE.clients TR.editing TD.actions DIV.data{
+TABLE TR.editing TD.actions DIV.data{
     display:none;
     visibility:hidden;
 }
-TABLE.clients TR TD.actions DIV.data{
+TABLE TR TD.actions DIV.data{
     display:inline-flex;
     visibility:visible;
 }
-TABLE.clients TR TD.actions DIV.edit{
+TABLE TR TD.actions DIV.edit{
     display:none;
     visibility:hidden;
 }
-TABLE.clients TD.editable INPUT{
+TABLE TD.editable INPUT{
     width:100%;
     border:0;
     background-color:transparent;
-    color: #00f;
+    color: #007bff;
     padding: 0;
     margin: 0;
 }
-TABLE.clients BUTTON{
+TABLE BUTTON{
     width: 80px;
 }
-TABLE.clients BUTTON.large{
+TABLE BUTTON.large{
     width: 160px;
 }
-TABLE.clients TH:last-child{
+TABLE TH:last-child{
     width: 5%;
 }
-TABLE.clients TH:first-child{
+TABLE TH:first-child{
     width: 10%;
 }
-TABLE.clients TH{
+TABLE TH{
     width: 30%;
 }
-TABLE.clients TH LABEL{
+TABLE TH LABEL{
 	margin-top: 3px;
 }
-TABLE.clients TH DIV.sorting{
+TABLE TH DIV.sorting{
     float: right;
     display: inline-grid;
     margin-left: 10px;

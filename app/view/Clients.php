@@ -48,6 +48,13 @@ links:
 </body>
 <script>
 
+function htmlEntities(str) {
+    return String(str).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;');
+}
+
+function textEntities(str) {
+    return String(str).replace(/&amp;/g, '&').replace(/&lt;/g, '<').replace(/&gt;/g, '>').replace(/&quot;/g, '"');
+}
   
 jQuery(document).ready(function(){
 
@@ -55,10 +62,32 @@ jQuery(document).ready(function(){
     var gNewId = 0;
     
     var Row = {
-            clientId: {editable:false, class:'', head:'#id'},
-            firstname: {editable:true, placeholder:"First Name", default:'', class:'editable', head:'Firstname'},
-            lastname: {editable:true, placeholder:"Last Name", default:'', class:'editable', head:'LastName'},
-            appointmentDate: {editable:true, placeholder:"Appointment Date", default:'0000-00-00 00:00:00', class:'editable',head:'Appointment Date'}
+        clientId: {
+            editable:false, 
+            class:'', 
+            head:'#id'
+            },
+        firstname: {
+            editable:true, 
+            placeholder:"First Name", 
+            default:'', 
+            class:'editable', 
+            head:'Firstname'
+            },
+        lastname: {
+            editable:true, 
+            placeholder:"Last Name", 
+            default:'', 
+            class:'editable', 
+            head:'LastName'
+            },
+        appointmentDate: {
+            editable:true, 
+            placeholder:"Appointment Date", 
+            default:'0000-00-00 00:00:00', 
+            class:'editable',
+            head:'Appointment Date'
+            }
     };
 
     addHeader();
@@ -152,7 +181,7 @@ jQuery(document).ready(function(){
             saveRowModif($(this).closest('TR').attr('rowid'));
         });
     }
-    
+
     function addRow(data){
         gData.push(data);
         var row = Row;
@@ -164,7 +193,7 @@ jQuery(document).ready(function(){
             if(typeof data[o] == 'undefined'){
                 html += row[o].default; 
             }else{
-                html += data[o]; 
+                html += htmlEntities(data[o]); 
             }
             html += '</' + tag + '>'; 
         }
@@ -212,8 +241,13 @@ jQuery(document).ready(function(){
         }
         if(msg != ''){
             msg = '<b>Error: </b>' + msg.substring(0, msg.length - 1);
-            var html = '<tr class="error errormsg"><th colspan="5"><span class="error">' + msg + '</span></th></tr>';
-            $('TABLE.clients TR[rowid="' + id + '"]').before(html);
+            var html = '<th colspan="5"><span class="error">' + msg + '</span></th>';
+            if($('TABLE.clients TR[rowid="' + id + '"]').prev().hasClass('errormsg')){
+                $('TABLE.clients TR[rowid="' + id + '"]').prev().html(html);            
+            }else{
+                html = '<tr class="error errormsg">' + html + '</tr>';
+                $('TABLE.clients TR[rowid="' + id + '"]').before(html);
+            }
         }
     }
 
@@ -228,12 +262,13 @@ jQuery(document).ready(function(){
     }
 
     function setRowSaved(id){
+        deleteErrorMsgRow(id);
         var obj  = $('TABLE.clients TR[rowid="' + id + '"]');
         var rowData = _.find(gData, {clientId: parseInt(id)});
         obj.removeClass('editing error saving');
         obj.find('TD.editable').each(function(index){
             rowData[$(this).attr('colname')] = $(this).find('input').val();
-            $(this).html(rowData[$(this).attr('colname')]);
+            $(this).html(htmlEntities(rowData[$(this).attr('colname')]));
             });
         obj = obj.find('TD.actions');
         obj.find('BUTTON.save').html('save');
@@ -266,7 +301,14 @@ jQuery(document).ready(function(){
         (!enable)? obj.html('refresh') : obj.html('<i class="fas fa-spinner fa-pulse"></i>');
     }
 
+    function deleteErrorMsgRow(id){
+        if($('TABLE.clients TR[rowid="' + id + '"]').prev().hasClass('errormsg')){
+            $('TABLE.clients TR[rowid="' + id + '"]').prev().remove();
+        }
+    }
+
     function cancelRowModif(id){
+        deleteErrorMsgRow(id);
         if(id == gNewId){
             disableAddAction(false);
             deleteTableRow(id);
@@ -289,7 +331,6 @@ jQuery(document).ready(function(){
             type: post,
             url: url,
         }).done(function(data){
-
             deleteTableRow(rowId);
             checkMultiControls();
         }).fail(function(xhr, status, error){
@@ -346,7 +387,7 @@ jQuery(document).ready(function(){
                 $(this).html('<input type="text">')
                     .find('input')
                     .attr('name', $(this).attr('colname'))
-                    .val(rowData[$(this).attr('colname')]);
+                    .val(textEntities(rowData[$(this).attr('colname')]));
             });
         checkMultiControls();
     }
