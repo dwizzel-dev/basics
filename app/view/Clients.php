@@ -1,3 +1,10 @@
+<?php
+/*
+author: dwizzel
+date: 29-01-2018
+desc: load data into global var, then manipulates the global var with lodash instead of the table data
+*/
+?>
 <!DOCTYPE html>
 <html lang="<?php echo $data['lang']; ?>">
 <head>
@@ -6,8 +13,10 @@
   <title><?php echo $data['title']; ?></title>
   <link rel="stylesheet" href="<?php echo CSS_PATH; ?>global.css">
   <link rel="stylesheet" href="<?php echo CSS_PATH; ?>fontawesome-all.min.css">
+  <!--<link rel="stylesheet" href="<?php echo CSS_PATH; ?>font-awesome.min">-->
   <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css" integrity="sha384-Gn5384xqQ1aoWXA+058RXPxPg6fy4IWvTNh0E263XmFcJlSAwiGgFAW/dAiS6JXm" crossorigin="anonymous">
   <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
+  <script src="<?php echo JS_PATH; ?>lodash.min.js"></script>
 </head>
 <style>
 </style>
@@ -18,13 +27,6 @@
         <div class="table-responsive">
             <table class="clients table table-striped table-hover table-bordered">
             <thead class="thead-dark">
-                <tr>
-                    <th scope="col">id</th>
-                    <th scope="col">firstname</th>
-                    <th scope="col">lastname</th>
-                    <th scope="col">appointmentDate</th>
-                    <th scope="col">actions</th>
-                </tr>
             </thead>
             <tbody>
                 <tr class="controls">
@@ -46,18 +48,18 @@
   
 jQuery(document).ready(function(){
 
-    getRows();
-
-    var gNewId = 'new';
+    var gData = [];
+    var gNewId = 0;
     
-    var Row = function(){
-        this.cols = {
-            clientId: {editable:false, class:''},
-            firstname: {editable:true, placeholder:"First Name", default:'', class:'editable'},
-            lastname: {editable:true, placeholder:"Last Name", default:'', class:'editable'},
-            appointmentDate: {editable:true, placeholder:"Appointment Date", default:'0000-00-00 00:00:00', class:'editable'}
-        };
-    }
+    var Row = {
+            clientId: {editable:false, class:'', head:'#id'},
+            firstname: {editable:true, placeholder:"First Name", default:'', class:'editable', head:'Firstname'},
+            lastname: {editable:true, placeholder:"Last Name", default:'', class:'editable', head:'LastName'},
+            appointmentDate: {editable:true, placeholder:"Appointment Date", default:'0000-00-00 00:00:00', class:'editable',head:'Appointment Date'}
+    };
+
+    addHeader();
+    getRows();
 
     $('BUTTON.refresh').click(function(){
         getRows();
@@ -67,11 +69,37 @@ jQuery(document).ready(function(){
             return;
         }
         $(this).attr('disabled', true);
-        addRow({clientId:gNewId});
+        addRow({
+            clientId: gNewId,
+            firstname: '',
+            lastname: '',
+            appointmentDate: '0000-00-00 00:00:00'
+        });
         modifyRow(gNewId);
     });
+
+    function addHeader(){
+        var html = '<tr>';
+        for(var o in Row){
+            html += '<th scope="col" colname="' + o + '">';
+            html += '<label>' + Row[o].head + '</label>';
+            html += '<div class="sorting"><i class="fas fa-angle-up" direction="up"></i><i class="fas fa-angle-down" direction="down"></i></div>';
+            html += '</th>';
+        }
+        html += '<th scope="col"></th>';
+        html += '</tr>';
+        $('TABLE.clients THEAD')
+            .html(html)
+            .find('DIV.sorting i').each(function(){
+                $(this).click(function(e){
+                    console.log($(this).closest('TH').attr('colname') + ':' + ($(this).attr('direction')));
+                });
+            });
+            
+    }
     
     function getRows(){
+        gData = [];
         disableAddAction(true);
         disableRefreshAction(true);
         $('TABLE.clients TBODY TR[class!="controls"]').remove();
@@ -113,20 +141,17 @@ jQuery(document).ready(function(){
     }
     
     function addRow(data){
-        var row = new Row();
+        gData.push(data);
+        var row = Row;
         var html = '<tr>';    
-        var colIndex = 0;
-        var values = {};
-        for(var o in row.cols){
-            let tag = (colIndex == 0)? 'th':'td';
-            let inner = ' colindex="' + (colIndex++) + '" rowname="' + o + '" class="' + row.cols[o].class + '"';
+        for(var o in row){
+            let tag = (o == 'clientId')? 'th':'td';
+            let inner = ' colname="' + o + '" class="' + row[o].class + '"';
             html += '<' + tag + inner + '>';
             if(typeof data[o] == 'undefined'){
-                html += row.cols[o].default; 
-                values[o] = row.cols[o].default;
+                html += row[o].default; 
             }else{
                 html += data[o]; 
-                values[o] = data[o];
             }
             html += '</' + tag + '>'; 
         }
@@ -141,11 +166,17 @@ jQuery(document).ready(function(){
         html += '</div>';
         html += '</td>';
         html += '</tr>';
-        $('TABLE.clients TBODY TR:last')
-            .before(html)
-            .prev()
-            .attr('rowid', data.clientId)
-            .data('values', values);
+        if($('TABLE.clients TR.multi-controls').length == 1){
+            $('TABLE.clients TR.multi-controls')
+                .before(html)
+                .prev()
+                .attr('rowid', data.clientId);
+        }else{
+            $('TABLE.clients TBODY TR:last')
+                .before(html)
+                .prev()
+                .attr('rowid', data.clientId);
+        }
         addActions(data.clientId);
     }
 
@@ -172,14 +203,12 @@ jQuery(document).ready(function(){
 
     function setRowSaved(id){
         var obj  = $('TABLE.clients TR[rowid="' + id + '"]');
-        var data = obj.data('values');
+        var rowData = _.find(gData, {clientId: parseInt(id)});
         obj.removeClass('editing error saving');
-        obj.find('TD.editable')
-            .each(function(index){
-                data[$(this).attr('rowname')] = $(this).find('input').val();
-                $(this).html(data[$(this).attr('rowname')]);
+        obj.find('TD.editable').each(function(index){
+            rowData[$(this).attr('colname')] = $(this).find('input').val();
+            $(this).html(rowData[$(this).attr('colname')]);
             });
-        obj.data('values', data);    
         obj = obj.find('TD.actions');
         obj.find('BUTTON.save').html('save');
         obj.find('BUTTON.save').attr('disabled', false);
@@ -189,6 +218,8 @@ jQuery(document).ready(function(){
 
     function setNewRowId(id){
         var obj  = $('TABLE.clients TR[rowid="' + gNewId + '"]');
+        var rowData = _.find(gData, {clientId: parseInt(gNewId)});
+        rowData.clientId = id;
         obj.find('TH:first').html(id);
         obj.attr('rowid', id);
     }
@@ -214,10 +245,11 @@ jQuery(document).ready(function(){
             disableAddAction(false);
             deleteTableRow(id);
         }else{
+            var rowData = _.find(gData, {clientId: parseInt(id)});
             $('TABLE.clients TR[rowid="' + id + '"]')
                 .removeClass('editing error saving')
                 .find('TD.editable').each(function(index){
-                    $(this).html($(this).closest('tr').data('values')[$(this).attr('rowname')]);
+                    $(this).html(rowData[$(this).attr('colname')]);
                 })
         }
         checkMultiControls();
@@ -231,6 +263,7 @@ jQuery(document).ready(function(){
             type: post,
             url: url,
         }).done(function(data){
+
             deleteTableRow(rowId);
             checkMultiControls();
         }).fail(function(xhr, status, error){
@@ -240,6 +273,7 @@ jQuery(document).ready(function(){
     }
 
     function deleteTableRow(id){
+        _.pullAt(gData, _.findIndex(gData, {clientId: parseInt(id)}));
         $('.clients TR[rowid="' + id + '"]').remove();    
     }
 
@@ -248,7 +282,7 @@ jQuery(document).ready(function(){
         $('TABLE.clients TR[rowid="' + id + '"]')
             .find('TD.editable')
             .each(function(index){
-                values[$(this).attr('rowname')] = $(this).find('input').val();
+                values[$(this).attr('colname')] = $(this).find('input').val();
             });
         setRowLoading(id);
         var post = 'POST';
@@ -274,14 +308,15 @@ jQuery(document).ready(function(){
     }
 
     function modifyRow(id){
+        var rowData = _.find(gData, {clientId: parseInt(id)});
         $('.clients TR[rowid="' + id + '"]')
             .addClass('editing')
             .removeClass('error')
             .find('TD.editable').each(function(index){
                 $(this).html('<input type="text">')
                     .find('input')
-                    .attr('name', $(this).attr('rowname'))
-                    .val($(this).closest('tr').data('values')[$(this).attr('rowname')]);
+                    .attr('name', $(this).attr('colname'))
+                    .val(rowData[$(this).attr('colname')]);
             });
         checkMultiControls();
     }
@@ -348,6 +383,7 @@ jQuery(document).ready(function(){
         setSaveAllButt();
 
     }
+
 
 });
 </script>

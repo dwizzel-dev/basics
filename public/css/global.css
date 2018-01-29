@@ -60,11 +60,22 @@ TABLE.clients BUTTON{
 TABLE.clients BUTTON.large{
     width: 160px;
 }
-TABLE.clients TH:last-child, .clients TH:first-child{
+TABLE.clients TH:last-child{
     width: 5%;
+}
+TABLE.clients TH:first-child{
+    width: 10%;
 }
 TABLE.clients TH{
     width: 30%;
+}
+TABLE.clients TH LABEL{
+	margin-top: 3px;
+}
+TABLE.clients TH DIV.sorting{
+    float: right;
+    display: inline-grid;
+    margin-left: 10px;
 }
 .loading-icon {
 	width: 10px !important;

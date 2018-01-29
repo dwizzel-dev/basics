@@ -43,7 +43,7 @@ class Cache {
 	public static function remove($name) {
         $file = CACHE_PATH.$name.'.json';
         if(file_exists($file)){	
-            unlink($file);
+            @unlink($file);
         }
     }	
 		
