@@ -206,6 +206,33 @@ Class Router{
         return self::$inst;
     }
 
+    /*
+    private function match($url, $path){
+        $paths = explode('/', $path);
+        $regs = explode('/', $url);
+        if(count($paths) != count($regs)){
+            return false;
+        }
+        $request = new Request();
+        foreach($paths as $k=>$v){
+            if(!isset($regs[$k])){
+                return false;
+            }   
+            $split = false;
+            if(preg_match('/^(.*)\{([a-zA-Z]+)\}(.*)$/', $regs[$k], $split)){
+                if(preg_match('/^'.$split[1].'([0-9a-zA-Z]+)'.$split[3].'$/', $v, $match)){
+                    $request->{$split[2]} = $match[1];
+                }else{
+                    return false;    
+                }
+            }else if($regs[$k] != $v){
+                return false;
+            }
+        }
+        return $request;
+    }
+    */
+
     private function match($url, $path){
         $paths = explode('/', $path);
         $regs = explode('/', $url);
