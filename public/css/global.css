@@ -70,13 +70,13 @@ TABLE BUTTON.large{
     width: 160px;
 }
 TABLE TH:last-child{
-    width: 5%;
+    width: 10% !important;
 }
 TABLE TH:first-child{
-    width: 10%;
+    width: 10% !important;
 }
 TABLE TH{
-    width: 30%;
+    /*width: 30%;*/
 }
 TABLE TH LABEL{
 	margin-top: 3px;

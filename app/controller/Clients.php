@@ -23,6 +23,11 @@ class Clients {
         'appointmentDate' => array(
             'value' => '',
             'empty' => true
+        ),
+        'city' => array(
+            'value' => '',
+            'empty' => false,
+            'error' => 'city must be filled'
         )
     );
 	           
