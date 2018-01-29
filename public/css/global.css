@@ -14,8 +14,16 @@ TABLE.clients TR.editing{
 TABLE.clients TR.error{
     background-color: #dc354517 !important;
 }
-TABLE.clients TR.error{
-    background-color: #dc354517 !important;
+TABLE.clients TR.error TH:first-child{
+    color: #bd2130;
+}
+TABLE.clients TR.errormsg TD, TABLE.clients TR.errormsg TH{
+	padding: 5px;
+}
+TABLE.clients TR.errormsg SPAN.error{
+    color: #bd2130;
+    font-size: 0.8rem;
+    font-weight: normal;
 }
 TABLE.clients TR.saving{
     background-color: #28a74517 !important;

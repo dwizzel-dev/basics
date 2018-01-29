@@ -133,7 +133,8 @@ jQuery(document).ready(function(){
     }
 
     function ajaxFail(xhr, status, error){
-        console.log('fail:' + xhr + '|' + status + '|' + error);
+        console.log('fail:' + status + '|' + error);
+        console.log(xhr);
     }
 
     function addActions(id){
@@ -202,6 +203,20 @@ jQuery(document).ready(function(){
         
     }
 
+    function setRowErrorMsg(id, arr){
+        var msg = '';
+        for(var o in arr){
+            if(typeof(arr[o].message) == 'string'){
+                msg += ' ' + arr[o].message + ','; 
+            }
+        }
+        if(msg != ''){
+            msg = '<b>Error: </b>' + msg.substring(0, msg.length - 1);
+            var html = '<tr class="error errormsg"><th colspan="5"><span class="error">' + msg + '</span></th></tr>';
+            $('TABLE.clients TR[rowid="' + id + '"]').before(html);
+        }
+    }
+
     function setRowError(id){
         var obj = $('TABLE.clients TR[rowid="' + id + '"]');
         obj.removeClass('saving');
@@ -210,7 +225,6 @@ jQuery(document).ready(function(){
         obj.find('BUTTON.save').html('save');
         obj.find('BUTTON.save').attr('disabled', false);
         obj.find('BUTTON.cancel').attr('disabled', false);
-    
     }
 
     function setRowSaved(id){
@@ -313,8 +327,12 @@ jQuery(document).ready(function(){
                 disableAddAction(false);
                 setNewRowId(data.clientId);
             }
+            console.log('DONE');
         }).fail(function(xhr, status, error){
             ajaxFail(xhr, status, error);
+            if(xhr.status == '400' && typeof(xhr.responseJSON) == 'object'){
+                setRowErrorMsg(id, xhr.responseJSON);    
+            }
             setRowError(id);
         });
     }
