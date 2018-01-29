@@ -3,6 +3,9 @@
 author: dwizzel
 date: 29-01-2018
 desc: load data into global var, then manipulates the global var with lodash instead of the table data
+links:
+    https://lodash.com/docs/4.17.4#orderBy
+    https://github.com/jdalton/docdown/blob/0.5.0/lib/util.js#L13-L41
 */
 ?>
 <!DOCTYPE html>
@@ -83,7 +86,7 @@ jQuery(document).ready(function(){
         for(var o in Row){
             html += '<th scope="col" colname="' + o + '">';
             html += '<label>' + Row[o].head + '</label>';
-            html += '<div class="sorting"><i class="fas fa-angle-up" direction="up"></i><i class="fas fa-angle-down" direction="down"></i></div>';
+            html += '<div class="sorting"><i class="fas fa-angle-up" direction="asc"></i><i class="fas fa-angle-down" direction="desc"></i></div>';
             html += '</th>';
         }
         html += '<th scope="col"></th>';
@@ -92,10 +95,19 @@ jQuery(document).ready(function(){
             .html(html)
             .find('DIV.sorting i').each(function(){
                 $(this).click(function(e){
-                    console.log($(this).closest('TH').attr('colname') + ':' + ($(this).attr('direction')));
+                    sortData($(this).closest('TH').attr('colname'), $(this).attr('direction'));
                 });
             });
             
+    }
+
+    function sortData(colname, direction){
+        $('TABLE.clients TBODY TR[class!="controls"]').remove();
+        var arr = _.orderBy(gData, [colname], [direction]);
+        gData = [];
+        arr.forEach(function(row){
+            addRow(row);
+            });
     }
     
     function getRows(){
